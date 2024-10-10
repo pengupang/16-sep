@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using Unity.VisualScripting;
 using UnityEditor.Tilemaps;
 using UnityEngine;
@@ -12,6 +13,8 @@ public class movimiento : MonoBehaviour
     private Animator animator;
     private SpriteRenderer spriteRenderer;
     private bool tocaPiso = true;
+
+    private int cantSalto=0;
   
      // Start is called before the first frame update
     void Start()
@@ -43,18 +46,25 @@ public class movimiento : MonoBehaviour
         var vectorMovimiento = new Vector2(ejeX,0);
         transform.Translate(vectorMovimiento * Time.deltaTime * velocidad);
 
-        //paso 3
-        if (Input.GetKeyDown(KeyCode.Space) && tocaPiso)
+        
+        
+        if (Input.GetKeyDown(KeyCode.Space) && cantSalto<2)
         {
+            cantSalto++;
             var salto =  new Vector2(0,fuerzaSalto);
             cuerpoRigido.AddForce (salto,ForceMode2D.Impulse);
+            animator.SetInteger("saltos",cantSalto);
             tocaPiso = false;
+            
             
             
         }    }
         private void OnCollisionEnter2D(Collision2D collision){
-            if (collision.gameObject.tag == "Ground"){
+            if (collision.gameObject.CompareTag ("Ground")||collision.gameObject.CompareTag("spike")){
                 tocaPiso = true;
+                cantSalto=0;
+                animator.SetInteger("saltos",cantSalto);
             }
         }
+         
 }
